@@ -14,7 +14,7 @@ packer build packer.json
 ```
 
 The above command assumes your system is configured with AWS Access Key ID and Secret Key in your ~/.aws/credentials
-directory giving you adequete access to start/stop instances and create AMIs.
+directory giving you adequate access to start/stop instances and create AMIs.
 
 If you want to build with one of the other versions of ixgbevf that is packaged in the driver_source directory set the
 driver_version var appropriately:
