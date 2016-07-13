@@ -1,26 +1,39 @@
 {
   "variables": {
     "aws_access_key": "",
-    "aws_secret_key": ""
+    "aws_secret_key": "",
+		"aws_region": "us-east-1",
+		"source_ami": "ami-6d1c2007",
+		"driver_version": "2.16.4"
   },
   "builders": [{
     "type": "amazon-ebs",
     "access_key": "{{user `aws_access_key`}}",
     "secret_key": "{{user `aws_secret_key`}}",
-    "region": "us-east-1",
-    "source_ami": "ami-6d1c2007",
+    "region": "{{user `aws_region`}}",
+    "source_ami": "{{user `source_ami`}}",
     "instance_type": "m4.xlarge",
     "ssh_username": "centos",
 		"ssh_pty" : true,
 		"enhanced_networking": "true",
-    "ami_name": "CentOS 7 Enhanced Networking {{timestamp}}"
+    "ami_name": "CentOS 7 Enhanced Networking (ixgbevf {{user `driver_version`}}) {{timestamp}}"
   }],
 	"provisioners": [{
 	"type": "shell",
 	"inline": [
 			"sleep 30",
+		  "sudo yum install -y wget gcc \"kernel-devel-uname-r == $(uname -r)\"",
+		  "wget -O /tmp/tar.gz https://raw.githubusercontent.com/gisjedi/ixgbevf/master/driver_source/ixgbevf-{{user `driver_version`}}.tar.gz",
+		  "tar xvf /tmp/tar.gz -C /tmp/",
+		  "cd /tmp/ixgbevf-{{user `driver_version`}}/src",
+		  "sudo make install",
+		  "cd /tmp",
+		  "sudo rm -fr /tmp/ixgbevf-{{user `driver_version`}} /tmp/tar.gz",
+		  "sudo yum remove -y wget gcc kernel-devel --setopt=clean_requirements_on_remove=1",
+		  "sudo yum clean all",
 			"sudo sed -i '/^GRUB\\_CMDLINE\\_LINUX/s/\"$/\\ net\\.ifnames\\=0\"/' /etc/default/grub",
-			"sudo grub2-mkconfig -o /boot/grub2/grub.cfg"
+			"sudo grub2-mkconfig -o /boot/grub2/grub.cfg",
+			"sudo /sbin/dracut -f /boot/initramfs-`uname -r`.img `uname -r`"
 		]
 	}]
 }
