@@ -1,0 +1,39 @@
+{
+	"variables": {
+		"aws_access_key": "",
+		"aws_secret_key": "",
+		"aws_region": "us-east-1",
+		"source_ami": "ami-6d1c2007",
+		"driver_version": "3.2.2"
+	},
+	"builders": [
+		{
+			"type": "amazon-ebs",
+			"access_key": "{{user `aws_access_key`}}",
+			"secret_key": "{{user `aws_secret_key`}}",
+			"region": "{{user `aws_region`}}",
+			"source_ami": "{{user `source_ami`}}",
+			"instance_type": "m4.xlarge",
+			"ssh_username": "centos",
+			"ssh_pty": true,
+			"enhanced_networking": "true",
+			"ami_name": "CentOS 7 Enhanced Networking (ixgbevf {{user `driver_version`}}) {{timestamp}}",
+			"ami_description": "This AMI is constructed to rebuild ixgbevf kernel module via DKMS on kernel update, but as the kernel includes an older version that will take precedence. Following reboot into the new kernel, this command should be executed to re-establish the updated driver as the resident ethernet driver: sudo dkms install ixgbevf/{{user `driver_version`}}; sudo reboot"
+		}
+	],
+	"provisioners": [
+		{
+			"type": "file",
+			"source": "driver_source/ixgbevf-{{user `driver_version`}}.tar.gz",
+			"destination": "/tmp/ixgbevf-{{user `driver_version`}}.tar.gz"
+		},
+		{
+			"type": "shell",
+			"execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'",
+			"environment_vars": [
+				"VERSION={{user `driver_version`}}"
+			],
+			"scripts": [ "scripts/update-kernel.sh", "scripts/build-install.sh" ]
+		}
+	]
+}
