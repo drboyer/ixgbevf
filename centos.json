@@ -18,7 +18,7 @@
 			"ssh_pty": true,
 			"enhanced_networking": "true",
 			"ami_name": "CentOS 7 Enhanced Networking (ixgbevf {{user `driver_version`}}) {{timestamp}}",
-			"ami_description": "This AMI is constructed to rebuild ixgbevf kernel module via DKMS on kernel update, but as the kernel includes an older version that will take precedence. Following reboot into the new kernel, this command should be executed to re-establish the updated driver as the resident ethernet driver: sudo dkms install ixgbevf/{{user `driver_version`}}; sudo reboot"
+			"ami_description": "This command should be executed to re-establish the ixgbevf v{{user `driver_version`}} as the ethernet driver following kernel upgrades: sudo dkms install ixgbevf/{{user `driver_version`}}; sudo reboot"
 		}
 	],
 	"provisioners": [
@@ -33,7 +33,7 @@
 			"environment_vars": [
 				"VERSION={{user `driver_version`}}"
 			],
-			"scripts": [ "scripts/update-kernel.sh", "scripts/build-install.sh" ]
+			"scripts": [ "scripts/centos-kernel-upgrade.sh", "scripts/centos-install.sh" ]
 		}
 	]
 }

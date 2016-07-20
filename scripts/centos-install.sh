@@ -2,7 +2,7 @@
 
 sleep 10
 yum install -y epel-release
-yum install -y dkms "kernel-devel-uname-r == $(uname -r)" "kernel-headers-uname-r == $(uname -r)"
+yum install -y dkms "kernel-devel-uname-r == $(uname -r)"
 tar xvf /tmp/ixgbevf-${VERSION}.tar.gz -C /usr/src/
 
 cat > /usr/src/ixgbevf-${VERSION}/dkms.conf << EOF
@@ -16,7 +16,6 @@ DEST_MODULE_LOCATION[0]="/updates"
 DEST_MODULE_NAME[0]="ixgbevf"
 AUTOINSTALL="yes"
 EOF
-
 
 dkms add ixgbevf/$VERSION
 dkms build ixgbevf/$VERSION
