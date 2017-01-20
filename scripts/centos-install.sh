@@ -5,7 +5,7 @@ sleep 10
 yum install -y epel-release
 yum install -y dkms "kernel-devel-uname-r == $(uname -r)"
 if [ ! -f "/tmp/ixgbevf-${VERSION}.tar.gz" ]; then
-    curl -o /tmp/ixgbevf-${VERSION}.tar.gz https://raw.githubusercontent.com/gisjedi/ixgbevf/master/driver_source/ixgbevf-${VERSION}.tar.gz
+    curl -o /tmp/ixgbevf-${VERSION}.tar.gz https://raw.githubusercontent.com/drboyer/ixgbevf/add-3.3.2/driver_source/ixgbevf-${VERSION}.tar.gz
 fi
 tar xvf /tmp/ixgbevf-${VERSION}.tar.gz -C /usr/src/
 
